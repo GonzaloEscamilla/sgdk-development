@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding = "Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="7.00"
+	Name="Gens"
+	ProjectGUID="{9FFB7437-AB3B-4B33-9647-2B60D1E93411}"
+	Keyword="MakeFileProj">
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="Debug"
+			IntermediateDirectory="Debug"
+			ConfigurationType="0">
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="nmake"
+				ReBuildCommandLine="nmake clean &amp; nmake"
+				CleanCommandLine="nmake clean"
+				Output="debug\gens\gens.exe"/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="Release"
+			IntermediateDirectory="Release"
+			ConfigurationType="0">
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="nmake RELEASE=1"
+				ReBuildCommandLine="nmake RELEASE=1 clean &amp; nmake RELEASE=1"
+				CleanCommandLine="nmake RELEASE=1 clean"
+				Output="release\gens\gens.exe"/>
+		</Configuration>
+	</Configurations>
+	<Files>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

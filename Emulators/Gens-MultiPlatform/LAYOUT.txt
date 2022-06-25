@@ -1,0 +1,19 @@
+The Gens source tree is structured as follows:
+
+	/common/src
+		Source files common to all platforms.  
+	
+	/<platform>
+		All files specific to building Gens on this platform.
+		Look for COMPILE.TXT for information about how to build
+		for this platform.
+
+	/<platform>/tools
+		Tools used for building Gens on this platform.		
+
+	/<platform>/src
+		Source files specific to this platform.
+		
+
+
+

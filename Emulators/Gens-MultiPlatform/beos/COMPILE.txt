@@ -1,0 +1,48 @@
+You need GCC and NASM installed, and the Allegro 4.1.9 programming library headers and libs.
+
+
+
+Gens uses the Starcream 680x0 library emulation for the genesis and Sega CD
+68000 CPU emulation, the core has been customised and optimised for Gens.
+
+Gens project is structured as follow:
+
+
+
+- Gens directory contains all gens sources except the CPU cores.
+
+- Main68k directory contains the sources for the main 68000 (genesis 68000).
+
+- Sub68k directory contains the sources for the sub 68000 (Sega CD 68000).
+
+- z80 directory contains the sources for the Z80 cpu (genesis).
+
+
+
+I used 2 68000 cores for speed reasons :
+
+
+- No context swap required.
+- Each core is optimised for its function.
+
+
+
+Here's the step to follow to compile succesfully the BeOS vesion of Gens:
+
+
+
+- Open the Starscream/Main68k folder and double click on the file named makem68k.sh
+- Open the Starscream/Sub68k folder and double click on the file named makes68k.sh
+
+- Open the Gens project and build gens, that's all :)
+
+
+
+The gens binary will be available in the gens<version>_bin directory
+
+
+
+
+
+
+
