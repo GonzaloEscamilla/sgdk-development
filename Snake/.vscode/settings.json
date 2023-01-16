@@ -3,8 +3,5 @@
         "${env:GDK}\\res",
     "res",
     "inc"
-],
-"files.associations": {
-    "queue.h": "c"
-}
+]
 }

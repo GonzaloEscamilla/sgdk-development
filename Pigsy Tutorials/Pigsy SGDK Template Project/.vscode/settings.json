@@ -1,7 +1,0 @@
-{ 
-    "C_Cpp.default.includePath": ["${env:GDK}\\inc",
-        "${env:GDK}\\res",
-    "res",
-    "inc"
-]
-}

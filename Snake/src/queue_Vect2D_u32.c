@@ -76,3 +76,24 @@ Vect2D_u32 QUEUE_deQueue()
 {
    return QUEUE_removeData();
 }
+
+void QUEUE_clean()
+{
+   if (rear == MAX - 1)
+      rear = -1;
+
+   if (rear < 0 || itemCount == 0)
+      return;
+
+
+
+   for (u32 i = 0; i <= rear; i++)
+   {
+      Vect2D_u32 nullValue = {NULL, NULL}; 
+      intArray[i] = nullValue;
+   }
+   
+   front = 0;
+   rear = -1;
+   itemCount = 0;
+}
