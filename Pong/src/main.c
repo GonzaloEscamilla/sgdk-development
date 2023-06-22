@@ -20,6 +20,8 @@ int ballVelX = 1;
 int ballVelY = 1;
 int ballWidth = 8;
 int ballHeight = 8;
+int moveBallMoveRate = 30;
+int moveBallCurrentTime = 0;
 
 Sprite* player;
 
@@ -28,6 +30,8 @@ const int playerPosY = 200;
 int playerVelX = 0;
 const int playerWidth = 32;
 const int playerHeight = 8;
+const int playerUpdateTime = 30;
+int playerCurrentUpdateTime = 0;
 
 /*Score variables*/
 int score = 0;
@@ -95,6 +99,14 @@ void myJoyHandler( u16 joy, u16 changed, u16 state)
 }
 
 void positionPlayer(){
+
+    if (playerCurrentUpdateTime <= playerUpdateTime)
+    {
+        playerCurrentUpdateTime++;
+        return;
+    }
+    playerCurrentUpdateTime = 0;
+
 	/*Add the player's velocity to its position*/
 	playerPosX += playerVelX;
 
@@ -108,6 +120,13 @@ void positionPlayer(){
 
 void moveBall()
 {
+    if (moveBallCurrentTime <= moveBallMoveRate)
+    {
+        moveBallCurrentTime++;
+        return;
+    }
+    moveBallCurrentTime = 0;
+
     ballPosX += ballVelX;
     ballPosY += ballVelY;
 
