@@ -1,0 +1,156 @@
+// --------------------------------------------------
+// 16Tile - Export Script
+// Copyright © Allone-Works - Iuri Nery
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Parameters
+// --------------------------------------------------
+// CUSTOM = Saves everything manually into a single file
+// LOWERCASE = Converts the {P_NAME} and {L_NAME} from uppercase to lowercase
+
+// --------------------------------------------------
+// Keywords
+// --------------------------------------------------
+// TILEMAP = Sets the reference for the variables to the tilemap layer
+// PRIORITY = Sets the reference for the variables to the priority layer
+// PALETTE = Sets the reference for the variables to the palette layer
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+// {P_NAME} = PROJECT NAME
+// {L_NAME} = LAYER NAME
+// {H_TILES} = COLUMNS
+// {V_TILES} = ROWS
+// {TILES} = TOTAL TILES (COLUMNS * ROWS)
+// {DATA} = TILE DATA (SINGLE LINE)
+// {DATA_GRID} = TILE DATA (GRID)
+
+// --------------------------------------------------
+// Custom
+// --------------------------------------------------
+// You can add _X at the end of each variable to specify which layer you're taking the data from when using CUSTOM as a parameter
+// EXAMPLE 1: {L_NAME_0}
+// EXAMPLE 2: {TILES_1}
+
+
+
+
+----- EXAMPLE 1: 1D Array
+EXPORT
+TILEMAP
+// Tilemap
+// --------------------------------------------------
+const u16 {P_NAME}_{L_NAME}[{TILES}] =
+{
+{DATA_GRID}
+};
+
+PRIORITY
+// Priority
+// --------------------------------------------------
+const u16 {P_NAME}_{L_NAME}_PRIORITY[{TILES}] =
+{
+{DATA_GRID}
+};
+
+PALETTE
+// Palette
+// --------------------------------------------------
+const u16 {P_NAME}_{L_NAME}_PALETTE[{TILES}] =
+{
+{DATA_GRID}
+};
+EXPORT_END
+
+
+
+
+----- EXAMPLE 2: 1D Array (Single Line)
+EXPORT
+TILEMAP
+// Tilemap
+// --------------------------------------------------
+const u16 {P_NAME}_{L_NAME}[{TILES}] = { {DATA} };
+
+PRIORITY
+// Priority
+// --------------------------------------------------
+const u16 {P_NAME}_{L_NAME}_PRIORITY[{TILES}] = { {DATA} };
+
+PALETTE
+// Palette
+// --------------------------------------------------
+const u16 {P_NAME}_{L_NAME}_PALETTE[{TILES}] = { {DATA} };
+EXPORT_END
+
+
+
+
+----- EXAMPLE 3: 2D Array
+EXPORT
+TILEMAP
+// Tilemap
+// --------------------------------------------------
+const u16 {P_NAME}_{L_NAME}[{V_TILES}][{H_TILES}] =
+{
+{DATA_GRID}
+};
+
+PRIORITY
+// Priority
+// --------------------------------------------------
+const u16 {P_NAME}_{L_NAME}_PRIORITY[{V_TILES}][{H_TILES}] =
+{
+{DATA_GRID}
+};
+
+PALETTE
+// Palette
+// --------------------------------------------------
+const u16 {P_NAME}_{L_NAME}_PALETTE[{V_TILES}][{H_TILES}] =
+{
+{DATA_GRID}
+};
+EXPORT_END
+
+
+
+
+----- EXAMPLE 4: 2D Array (Single Line)
+EXPORT
+TILEMAP
+// Tilemap
+// --------------------------------------------------
+const u16 {P_NAME}_{L_NAME}[{V_TILES}][{H_TILES}] = { {DATA} };
+
+PRIORITY
+// Priority
+// --------------------------------------------------
+const u16 {P_NAME}_{L_NAME}_PRIORITY[{V_TILES}][{H_TILES}] = { {DATA} };
+
+PALETTE
+// Palette
+// --------------------------------------------------
+const u16 {P_NAME}_{L_NAME}_PALETTE[{V_TILES}][{H_TILES}] = { {DATA} };
+EXPORT_END
+
+
+
+
+----- EXAMPLE 5: Custom
+EXPORT
++CUSTOM
++LOWERCASE
+// Custom
+// --------------------------------------------------
+#pragma once
+TILEMAP
+static const unsigned char {P_NAME}[] = { {DATA_0} };
+PRIORITY
+static const unsigned char {P_NAME}Priority[] = { {DATA_0} };
+TILEMAP
+static const unsigned char {P_NAME}_width = {H_TILES_0};
+static const unsigned char {P_NAME}_height = {V_TILES_0};
+EXPORT_END
