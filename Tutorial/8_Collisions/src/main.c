@@ -288,30 +288,29 @@ static void updateCamera()
 void checkCollisions()
 {
     s16 player_left_collision_coord;
-    s16 player_right_collision_coord = fix32ToInt(playerPosition.x) + PLAYER_COLBOX_RIGHT;
+    s16 player_right_collision_coord;
     s16 player_top_collision_coord = fix32ToInt(playerPosition.y) + PLAYER_COLBOX_TOP;
     s16 player_bottom_collision_coord = fix32ToInt(playerPosition.y) + PLAYER_COLBOX_BOTTOM;
 
     s16 xtilecoord_left_collision_player;
-    s16 xtilecoord_right_collision_player = player_right_collision_coord >> 4;
+    s16 xtilecoord_right_collision_player;
     s16 ytilecoord_top_collision_player = player_top_collision_coord >> 4;
     s16 ytilecoord_bottom_collision_player = player_bottom_collision_coord >> 4;
 
     u16 array_index_topleft_colbox;
-    u16 array_index_topright_colbox = xtilecoord_right_collision_player + (ytilecoord_top_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+    u16 array_index_topright_colbox;
     u16 array_index_bottomleft_colbox;
-    u16 array_index_bottomright_colbox = xtilecoord_right_collision_player + (ytilecoord_top_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+    u16 array_index_bottomright_colbox;
 
     u8 tile_collision_type_topleft;
-    u8 tile_collision_type_topright = LEVEL_COL[array_index_topright_colbox];
+    u8 tile_collision_type_topright;
     u8 tile_collision_type_bottomleft;
-    u8 tile_collision_type_bottomright = LEVEL_COL[array_index_bottomright_colbox];
+    u8 tile_collision_type_bottomright;
 
-    s16 blocked_left_coord;
+    s16 blocked_coord;
 
     sprintf(info, "%10i", tile_collision_type_bottomright );
     VDP_drawTextBG(BG_A, info, 28, 5);
-
 
     switch (currentPlayerDirection)
     {
@@ -328,8 +327,8 @@ void checkCollisions()
 
             if (tile_collision_type_topleft == SOLID_TILE || tile_collision_type_bottomleft == SOLID_TILE)
             {
-                blocked_left_coord = (xtilecoord_left_collision_player << 4) + 16 - PLAYER_COLBOX_LEFT;
-                playerPosition.x = intToFix32(blocked_left_coord);
+                blocked_coord = (xtilecoord_left_collision_player << 4) + 16 - PLAYER_COLBOX_LEFT;
+                playerPosition.x = intToFix32(blocked_coord);
             }
 
             break;
@@ -337,18 +336,71 @@ void checkCollisions()
         case Right:
         {
             playerPosition.x += playerSpeed;
+            
+            player_right_collision_coord = fix32ToInt(playerPosition.x) + PLAYER_COLBOX_RIGHT;
+            xtilecoord_right_collision_player = player_right_collision_coord >> 4;
+            array_index_topright_colbox = xtilecoord_right_collision_player + (ytilecoord_top_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+            array_index_bottomright_colbox = xtilecoord_right_collision_player + (ytilecoord_bottom_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+            
+            tile_collision_type_topright = LEVEL_COL[array_index_topright_colbox];
+            tile_collision_type_bottomright = LEVEL_COL[array_index_bottomright_colbox];
 
+            if (tile_collision_type_topright == SOLID_TILE || tile_collision_type_bottomright == SOLID_TILE)
+            {
+                blocked_coord = (xtilecoord_right_collision_player << 4) - PLAYER_COLBOX_RIGHT;
+                playerPosition.x = intToFix32(blocked_coord);
+                playerPosition.x -= FIX32(0.1);
+            }
             break;
         }
         case Up:
         {
             playerPosition.y -= playerSpeed;
 
+            player_top_collision_coord = fix32ToInt(playerPosition.y) + PLAYER_COLBOX_TOP;
+            ytilecoord_top_collision_player = player_top_collision_coord >> 4;
+
+            player_left_collision_coord = fix32ToInt(playerPosition.x) + PLAYER_COLBOX_LEFT;
+            xtilecoord_left_collision_player = player_left_collision_coord >> 4;
+            array_index_topleft_colbox = xtilecoord_left_collision_player + (ytilecoord_top_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+            tile_collision_type_topleft = LEVEL_COL[array_index_topleft_colbox];
+
+            player_right_collision_coord = fix32ToInt(playerPosition.x) + PLAYER_COLBOX_RIGHT;
+            xtilecoord_right_collision_player = player_right_collision_coord >> 4;
+            array_index_topright_colbox = xtilecoord_right_collision_player + (ytilecoord_top_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+            tile_collision_type_topright = LEVEL_COL[array_index_topright_colbox];
+
+            if (tile_collision_type_topleft == SOLID_TILE || tile_collision_type_topright == SOLID_TILE)
+            {
+                blocked_coord = (ytilecoord_top_collision_player << 4) + 16  - PLAYER_COLBOX_TOP;
+                playerPosition.y = intToFix32(blocked_coord);
+            }
+
             break;
         }
         case Down:
         {
             playerPosition.y += playerSpeed;
+
+            player_bottom_collision_coord = fix32ToInt(playerPosition.y) + PLAYER_COLBOX_BOTTOM;
+            ytilecoord_bottom_collision_player = player_bottom_collision_coord >> 4;
+
+            player_left_collision_coord = fix32ToInt(playerPosition.x) + PLAYER_COLBOX_LEFT;
+            xtilecoord_left_collision_player = player_left_collision_coord >> 4;
+            array_index_bottomleft_colbox = xtilecoord_left_collision_player + (ytilecoord_bottom_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+            tile_collision_type_bottomleft = LEVEL_COL[array_index_bottomleft_colbox];
+
+            player_right_collision_coord = fix32ToInt(playerPosition.x) + PLAYER_COLBOX_RIGHT;
+            xtilecoord_right_collision_player = player_right_collision_coord >> 4;
+            array_index_bottomright_colbox = xtilecoord_right_collision_player + (ytilecoord_bottom_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+            tile_collision_type_bottomright = LEVEL_COL[array_index_bottomright_colbox];
+
+            if (tile_collision_type_bottomleft == SOLID_TILE || tile_collision_type_bottomright == SOLID_TILE)
+            {
+                blocked_coord = (ytilecoord_bottom_collision_player << 4) - PLAYER_COLBOX_BOTTOM;
+                playerPosition.y = intToFix32(blocked_coord);
+                playerPosition.y -= FIX32(0.1); 
+            }
             break;
         }
         default:
