@@ -121,6 +121,7 @@ int main(bool hardReset)
 
     SPR_init();
     
+    PAL_setPalette(PAL0, dungeon_pal0.data, DMA);
     PAL_setPalette(PAL1, spr_player.palette->data, DMA);
     player = SPR_addSprite(&spr_player, playerPosition.x, playerPosition.y, TILE_ATTR(PAL1, 0, FALSE, FALSE));
 
@@ -178,39 +179,10 @@ void loadRoom(MapDefinition* mapToLoad)
     SPR_update();
     SYS_doVBlankProcess();
 
-/*     PAL_fadeIn(0, 16,dungeon_pal0.data, 30, FALSE );
-    PAL_fadeIn(16, 32, spr_player.palette->data, 30, FALSE ); */
-
-/*
-    PAL_initFade(0, 16, palette_black, dungeon_pal0.data, 30);
-    
-    
-    u16 timer = 0;
-    while (timer <= 30)
-    {
-        timer++;
-        PAL_doFadeStep();
-        SPR_update();
-        SYS_doVBlankProcess();
-    }
-    PAL_initFade(16, 32, palette_black, spr_player.palette->data, 30);
-    
-    
-    timer = 0;
-    while (timer <= 30)
-    {
-        timer++;
-        PAL_doFadeStep();
-        SPR_update();
-        SYS_doVBlankProcess();
-    }
-*/
-
-    PAL_fade(0, 16, palette_black, dungeon_pal0.data, 30, TRUE );
-    PAL_fade(16, 32, palette_black, spr_player.palette->data, 30, TRUE);
-    PAL_waitFadeCompletion();
-     //PAL_fadeInPalette(PAL0, dungeon_pal0.data, 15, FALSE);
-    //PAL_fadeInPalette(PAL1, spr_player.palette->data, 15, FALSE); 
+    u16 palette[32];
+    memcpy(&palette[0], dungeon_pal0.data, 16);
+    memcpy(&palette[16], spr_player.palette->data, 16);
+    PAL_fadeIn(0, 32, palette, 30, FALSE);
 }
 
 static void handleInput()
