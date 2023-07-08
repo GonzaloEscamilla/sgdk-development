@@ -7,6 +7,7 @@
 "files.associations": {
     "genesis.h": "c",
     "resources.h": "c",
-    "player.h": "c"
+    "player.h": "c",
+    "inputs.h": "c"
 }
 }

@@ -1,50 +1,9 @@
 #include "genesis.h"
 #include <resources.h>
 #include "../inc/player.h"
+#include "../inc/inputs.h"
+#include "../inc/collisions.h"
 
-
-const u16 LENGHT_OF_LEVELCOL_ARRAY = 20;
-
-#define WALKABLE_TILE 0
-#define SOLID_TILE 1
-#define CHANGEROOM_TILE 2
-#define TRIGGER_TILE 3
-
-const u8 ROOM_A_COLLISIONS[280] =
-{
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2,
-	2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 1,
-	1, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1 
-};
-
-const u8 ROOM_B_COLLISIONS[280] =
-{
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 1,
-	1, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1 
-};
 
 #define HOW_FAR_TO_LEFT_BEFORE_CAMERA_MOVES 152
 #define HOW_FAR_TO_RIGHT_BEFORE_CAMERA_MOVES 153
@@ -61,17 +20,8 @@ const u8 ROOM_B_COLLISIONS[280] =
 #define DECELERATION FIX32(0.3)
 #define MAXSPEED FIX32(1.5)
 
-Sprite* player;
-
 u16 ind = TILE_USER_INDEX;
 Map* current_level;
-
-Vect2D_f32 playerPosition = {FIX32(100), FIX32(100)};
-Vect2D_f32 playerVelocity = {FIX32(0.0f), FIX32(0.0f)};
-Vect2D_s32 inputValue = {FIX32(0.0f), FIX32(0.0f)};
-fix32 playerSpeed = FIX32(1.5);
-
-PlayerDirection currentPlayerDirection = None;
 
 int current_camera_x = 100;
 int current_camera_y = 100;
@@ -99,17 +49,14 @@ int main(bool hardReset)
     SPR_init();
     
     PAL_setPalette(PAL0, dungeon_pal0.data, DMA);
-    PAL_setPalette(PAL1, spr_player.palette->data, DMA);
-    player = SPR_addSprite(&spr_player, playerPosition.x, playerPosition.y, TILE_ATTR(PAL1, 0, FALSE, FALSE));
-
-    JOY_setEventHandler(joyEvent);
-
-    Player_InitPlayer();
+    
+    INPUT_Init();
+    PLAYER_Init();
 
     while (TRUE)
     {
-        handleInput();
         checkCollisions();
+        PLAYER_Update();
         updateCamera();
 
         SPR_update();
@@ -121,7 +68,6 @@ int main(bool hardReset)
 
 void loadRoomByIndex(int roomIndex)
 {
-    kprintf("Here");
 
 
     if (roomIndex == 0)
@@ -144,9 +90,11 @@ void loadRoom(MapDefinition* mapToLoad)
 
     if (current_level != NULL)
         MAP_release(current_level);
-
-    playerPosition.x = FIX32(140);
-    playerPosition.y = FIX32(160);
+    
+    
+    player.position.x = FIX32(140);
+    player.position.y = FIX32(160);
+    
 
     VDP_loadTileSet(&dungeon_tileset, ind, DMA);
     
@@ -164,107 +112,29 @@ void loadRoom(MapDefinition* mapToLoad)
     PAL_fadeIn(0, 32, palette, 30, FALSE);
 }
 
-static void handleInput()
-{
-    u16 joy1Value = JOY_readJoypad(JOY_1);
-
-
-    currentPlayerDirection = None;
-
-    if (joy1Value & BUTTON_LEFT)
-    {
-        //inputValue.x = clamp(inputValue.x - ACCELERATION, -MAXSPEED, MAXSPEED);
-        //playerPosition.x -= playerSpeed;
-        
-        currentPlayerDirection = Left;
-        //SPR_setAnim(player, ANIM_WALK_LEFT);
-    }
-    else if (joy1Value & BUTTON_RIGHT)
-    {
-        //inputValue.x = clamp(inputValue.x + ACCELERATION, -MAXSPEED, MAXSPEED);
-        currentPlayerDirection = Right;
-        //SPR_setAnim(player, ANIM_WALK_RIGHT);
-    }/* else
-    {
-        if (inputValue.x > STOPTHRESHOLD)
-        {
-            inputValue.x -= DECELERATION;
-        }
-        else if (inputValue.x < -STOPTHRESHOLD)
-        {
-            inputValue.x += DECELERATION;
-        }
-        else
-        {
-            inputValue.x = FIX32(0);
-        }
-    } */
-    
-    if (joy1Value & BUTTON_UP)
-    {
-        //inputValue.y = clamp(inputValue.y - ACCELERATION, -MAXSPEED, MAXSPEED);
-        currentPlayerDirection = Back;
-        
-        //SPR_setAnim(player, ANIM_WALK_BACK);
-    }
-    else if (joy1Value & BUTTON_DOWN)
-    {
-        //inputValue.y = clamp(inputValue.y + ACCELERATION, -MAXSPEED, MAXSPEED);
-        currentPlayerDirection = Front;
-        //SPR_setAnim(player, ANIM_WALK_FRONT);
-    }
-    /* else
-    {
-        if (inputValue.y > STOPTHRESHOLD)
-        {
-            inputValue.y -= DECELERATION;
-        }
-        else if (inputValue.y < -STOPTHRESHOLD)
-        {
-            inputValue.y += DECELERATION;
-        }
-        else
-        {
-            inputValue.y = FIX32(0);
-        }
-    } */
-
-    if(!(joy1Value & BUTTON_LEFT) && !(joy1Value & BUTTON_RIGHT) && !(joy1Value & BUTTON_DOWN) && !(joy1Value & BUTTON_UP))
-    {
-        //SPR_setAnimAndFrame(player, ANIM_IDLE_FRONT, 0);
-        //player->timer = 0;
-    }
-}
-
-void updatePlayerPosition()
-{
-    //playerPosition.x += inputValue.x/** playerSpeed*/ ;
-    //playerPosition.y += inputValue.y /*playerSpeed*/ ;
-}
-
 static void updateCamera()
 {
-    if (playerPosition.x < FIX32(0))
+    if (player.position.x < FIX32(0))
     {
-        playerPosition.x = FIX32(0);
+        player.position.x = FIX32(0);
     }
-    else if(playerPosition.x > FIX32(MAP_WIDTH - PLAYER_WIDTH))
+    else if(player.position.x > FIX32(MAP_WIDTH - PLAYER_WIDTH))
     {
-        playerPosition.x = FIX32(MAP_WIDTH - PLAYER_WIDTH);
+        player.position.x = FIX32(MAP_WIDTH - PLAYER_WIDTH);
     }
 
-    if (playerPosition.y < FIX32(0))
+    if (player.position.y < FIX32(0))
     {
-        playerPosition.y = FIX32(0);
+        player.position.y = FIX32(0);
     }
-    else if(playerPosition.y > FIX32(MAP_HEIGHT - PLAYER_HEIGHT))
+    else if(player.position.y > FIX32(MAP_HEIGHT - PLAYER_HEIGHT))
     {
-        playerPosition.y = FIX32(MAP_HEIGHT - PLAYER_HEIGHT);
+        player.position.y = FIX32(MAP_HEIGHT - PLAYER_HEIGHT);
     }
     
     //position of player on map as a whole number
-    int player_x_map_integer = fix32ToInt(playerPosition.x);
-    int player_y_map_integer = fix32ToInt(playerPosition.y);
+    int player_x_map_integer = fix32ToInt(player.position.x);
+    int player_y_map_integer = fix32ToInt(player.position.y);
 
     //player position on screen
     int player_x_position_on_screen = player_x_map_integer - current_camera_x;
@@ -325,17 +195,15 @@ static void updateCamera()
 
     //kprintf("PlayerPosition: x = %ld, y = %ld\n", playerPosition.x, playerPosition.y);
 
-    kprintf("Sprite Set Position");
-
-    SPR_setPosition(player, fix32ToInt(playerPosition.x) - new_camera_x, fix32ToInt(playerPosition.y) - new_camera_y);
+    SPR_setPosition(player.sprite, fix32ToInt(player.position.x) - new_camera_x, fix32ToInt(player.position.y) - new_camera_y);
 }
 
 void checkCollisions()
 {
-    s16 player_left_collision_coord;
+   /*  s16 player_left_collision_coord;
     s16 player_right_collision_coord;
-    s16 player_top_collision_coord = fix32ToInt(playerPosition.y) + PLAYER_COLBOX_TOP;
-    s16 player_bottom_collision_coord = fix32ToInt(playerPosition.y) + PLAYER_COLBOX_BOTTOM;
+    s16 player_top_collision_coord = fix32ToInt(player.position.y) + PLAYER_COLBOX_TOP;
+    s16 player_bottom_collision_coord = fix32ToInt(player.position.y) + PLAYER_COLBOX_BOTTOM;
 
     s16 xtilecoord_left_collision_player;
     s16 xtilecoord_right_collision_player;
@@ -351,18 +219,18 @@ void checkCollisions()
     u8 tile_collision_type_topright = 0;
     u8 tile_collision_type_bottomleft = 0;
     u8 tile_collision_type_bottomright = 0;
-
+    
     s16 blocked_coord;
 
     sprintf(info, "%10i", tile_collision_type_bottomright );
     VDP_drawTextBG(BG_A, info, 28, 5);
 
-    switch (currentPlayerDirection)
+    switch (player.currentDirection)
     {
         case Left:
         {
-            playerPosition.x -= playerSpeed;
-            player_left_collision_coord = fix32ToInt(playerPosition.x) + PLAYER_COLBOX_LEFT;
+            player.position.x -= player.speed;
+            player_left_collision_coord = fix32ToInt(player.position.x) + PLAYER_COLBOX_LEFT;
             xtilecoord_left_collision_player = player_left_collision_coord >> 4;
             array_index_topleft_colbox = xtilecoord_left_collision_player + (ytilecoord_top_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
             tile_collision_type_topleft = ROOM_A_COLLISIONS[array_index_topleft_colbox];
@@ -373,16 +241,16 @@ void checkCollisions()
             if (tile_collision_type_topleft == SOLID_TILE || tile_collision_type_bottomleft == SOLID_TILE)
             {
                 blocked_coord = (xtilecoord_left_collision_player << 4) + 16 - PLAYER_COLBOX_LEFT;
-                playerPosition.x = intToFix32(blocked_coord);
+                player.position.x = intToFix32(blocked_coord);
             }
 
             break;
         }
         case Right:
         {
-            playerPosition.x += playerSpeed;
+            player.position.x += player.speed;
             
-            player_right_collision_coord = fix32ToInt(playerPosition.x) + PLAYER_COLBOX_RIGHT;
+            player_right_collision_coord = fix32ToInt(player.position.x) + PLAYER_COLBOX_RIGHT;
             xtilecoord_right_collision_player = player_right_collision_coord >> 4;
             array_index_topright_colbox = xtilecoord_right_collision_player + (ytilecoord_top_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
             array_index_bottomright_colbox = xtilecoord_right_collision_player + (ytilecoord_bottom_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
@@ -393,24 +261,24 @@ void checkCollisions()
             if (tile_collision_type_topright == SOLID_TILE || tile_collision_type_bottomright == SOLID_TILE)
             {
                 blocked_coord = (xtilecoord_right_collision_player << 4) - PLAYER_COLBOX_RIGHT;
-                playerPosition.x = intToFix32(blocked_coord);
-                playerPosition.x -= FIX32(0.1);
+                player.position.x = intToFix32(blocked_coord);
+                player.position.x -= FIX32(0.1);
             }
             break;
         }
         case Back:
         {
-            playerPosition.y -= playerSpeed;
+            player.position.y -= player.speed;
 
-            player_top_collision_coord = fix32ToInt(playerPosition.y) + PLAYER_COLBOX_TOP;
+            player_top_collision_coord = fix32ToInt(player.position.y) + PLAYER_COLBOX_TOP;
             ytilecoord_top_collision_player = player_top_collision_coord >> 4;
 
-            player_left_collision_coord = fix32ToInt(playerPosition.x) + PLAYER_COLBOX_LEFT;
+            player_left_collision_coord = fix32ToInt(player.position.x) + PLAYER_COLBOX_LEFT;
             xtilecoord_left_collision_player = player_left_collision_coord >> 4;
             array_index_topleft_colbox = xtilecoord_left_collision_player + (ytilecoord_top_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
             tile_collision_type_topleft = ROOM_A_COLLISIONS[array_index_topleft_colbox];
 
-            player_right_collision_coord = fix32ToInt(playerPosition.x) + PLAYER_COLBOX_RIGHT;
+            player_right_collision_coord = fix32ToInt(player.position.x) + PLAYER_COLBOX_RIGHT;
             xtilecoord_right_collision_player = player_right_collision_coord >> 4;
             array_index_topright_colbox = xtilecoord_right_collision_player + (ytilecoord_top_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
             tile_collision_type_topright = ROOM_A_COLLISIONS[array_index_topright_colbox];
@@ -418,24 +286,24 @@ void checkCollisions()
             if (tile_collision_type_topleft == SOLID_TILE || tile_collision_type_topright == SOLID_TILE)
             {
                 blocked_coord = (ytilecoord_top_collision_player << 4) + 16  - PLAYER_COLBOX_TOP;
-                playerPosition.y = intToFix32(blocked_coord);
+                player.position.y = intToFix32(blocked_coord);
             }
 
             break;
         }
         case Front:
         {
-            playerPosition.y += playerSpeed;
+            player.position.y += player.speed;
 
-            player_bottom_collision_coord = fix32ToInt(playerPosition.y) + PLAYER_COLBOX_BOTTOM;
+            player_bottom_collision_coord = fix32ToInt(player.position.y) + PLAYER_COLBOX_BOTTOM;
             ytilecoord_bottom_collision_player = player_bottom_collision_coord >> 4;
 
-            player_left_collision_coord = fix32ToInt(playerPosition.x) + PLAYER_COLBOX_LEFT;
+            player_left_collision_coord = fix32ToInt(player.position.x) + PLAYER_COLBOX_LEFT;
             xtilecoord_left_collision_player = player_left_collision_coord >> 4;
             array_index_bottomleft_colbox = xtilecoord_left_collision_player + (ytilecoord_bottom_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
             tile_collision_type_bottomleft = ROOM_A_COLLISIONS[array_index_bottomleft_colbox];
 
-            player_right_collision_coord = fix32ToInt(playerPosition.x) + PLAYER_COLBOX_RIGHT;
+            player_right_collision_coord = fix32ToInt(player.position.x) + PLAYER_COLBOX_RIGHT;
             xtilecoord_right_collision_player = player_right_collision_coord >> 4;
             array_index_bottomright_colbox = xtilecoord_right_collision_player + (ytilecoord_bottom_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
             tile_collision_type_bottomright = ROOM_A_COLLISIONS[array_index_bottomright_colbox];
@@ -443,8 +311,112 @@ void checkCollisions()
             if (tile_collision_type_bottomleft == SOLID_TILE || tile_collision_type_bottomright == SOLID_TILE)
             {
                 blocked_coord = (ytilecoord_bottom_collision_player << 4) - PLAYER_COLBOX_BOTTOM;
-                playerPosition.y = intToFix32(blocked_coord);
-                playerPosition.y -= FIX32(0.1); 
+                player.position.y = intToFix32(blocked_coord);
+                player.position.y -= FIX32(0.1); 
+            }
+            break;
+        }
+        case BackRight:
+        {
+            player.position.y -= player.diagonalSpeed;
+            player.position.x += player.diagonalSpeed;
+
+            player_top_collision_coord = fix32ToInt(player.position.y) + PLAYER_COLBOX_TOP;
+            ytilecoord_top_collision_player = player_top_collision_coord >> 4;
+
+            player_left_collision_coord = fix32ToInt(player.position.x) + PLAYER_COLBOX_LEFT;
+            xtilecoord_left_collision_player = player_left_collision_coord >> 4;
+            array_index_topleft_colbox = xtilecoord_left_collision_player + (ytilecoord_top_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+            tile_collision_type_topleft = ROOM_A_COLLISIONS[array_index_topleft_colbox];
+
+            player_right_collision_coord = fix32ToInt(player.position.x) + PLAYER_COLBOX_RIGHT;
+            xtilecoord_right_collision_player = player_right_collision_coord >> 4;
+            array_index_topright_colbox = xtilecoord_right_collision_player + (ytilecoord_top_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+            tile_collision_type_topright = ROOM_A_COLLISIONS[array_index_topright_colbox];
+
+            if (tile_collision_type_topleft == SOLID_TILE || tile_collision_type_topright == SOLID_TILE)
+            {
+                blocked_coord = (ytilecoord_top_collision_player << 4) + 16  - PLAYER_COLBOX_TOP;
+                player.position.y = intToFix32(blocked_coord);
+            }
+
+            break;
+        }
+        case BackLeft:
+        {
+            player.position.y -= player.diagonalSpeed;
+            player.position.x -= player.diagonalSpeed;
+
+            player_top_collision_coord = fix32ToInt(player.position.y) + PLAYER_COLBOX_TOP;
+            ytilecoord_top_collision_player = player_top_collision_coord >> 4;
+
+            player_left_collision_coord = fix32ToInt(player.position.x) + PLAYER_COLBOX_LEFT;
+            xtilecoord_left_collision_player = player_left_collision_coord >> 4;
+            array_index_topleft_colbox = xtilecoord_left_collision_player + (ytilecoord_top_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+            tile_collision_type_topleft = ROOM_A_COLLISIONS[array_index_topleft_colbox];
+
+            player_right_collision_coord = fix32ToInt(player.position.x) + PLAYER_COLBOX_RIGHT;
+            xtilecoord_right_collision_player = player_right_collision_coord >> 4;
+            array_index_topright_colbox = xtilecoord_right_collision_player + (ytilecoord_top_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+            tile_collision_type_topright = ROOM_A_COLLISIONS[array_index_topright_colbox];
+
+            if (tile_collision_type_topleft == SOLID_TILE || tile_collision_type_topright == SOLID_TILE)
+            {
+                blocked_coord = (ytilecoord_top_collision_player << 4) + 16  - PLAYER_COLBOX_TOP;
+                player.position.y = intToFix32(blocked_coord);
+            }
+
+            break;
+        }
+        case FrontRight:
+        {
+            player.position.y += player.diagonalSpeed;
+            player.position.x += player.diagonalSpeed;
+
+            player_bottom_collision_coord = fix32ToInt(player.position.y) + PLAYER_COLBOX_BOTTOM;
+            ytilecoord_bottom_collision_player = player_bottom_collision_coord >> 4;
+
+            player_left_collision_coord = fix32ToInt(player.position.x) + PLAYER_COLBOX_LEFT;
+            xtilecoord_left_collision_player = player_left_collision_coord >> 4;
+            array_index_bottomleft_colbox = xtilecoord_left_collision_player + (ytilecoord_bottom_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+            tile_collision_type_bottomleft = ROOM_A_COLLISIONS[array_index_bottomleft_colbox];
+
+            player_right_collision_coord = fix32ToInt(player.position.x) + PLAYER_COLBOX_RIGHT;
+            xtilecoord_right_collision_player = player_right_collision_coord >> 4;
+            array_index_bottomright_colbox = xtilecoord_right_collision_player + (ytilecoord_bottom_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+            tile_collision_type_bottomright = ROOM_A_COLLISIONS[array_index_bottomright_colbox];
+
+            if (tile_collision_type_bottomleft == SOLID_TILE || tile_collision_type_bottomright == SOLID_TILE)
+            {
+                blocked_coord = (ytilecoord_bottom_collision_player << 4) - PLAYER_COLBOX_BOTTOM;
+                player.position.y = intToFix32(blocked_coord);
+                player.position.y -= FIX32(0.1); 
+            }
+            break;
+        }
+        case FrontLeft:
+        {
+            player.position.y += player.diagonalSpeed;
+            player.position.x -= player.diagonalSpeed;
+
+            player_bottom_collision_coord = fix32ToInt(player.position.y) + PLAYER_COLBOX_BOTTOM;
+            ytilecoord_bottom_collision_player = player_bottom_collision_coord >> 4;
+
+            player_left_collision_coord = fix32ToInt(player.position.x) + PLAYER_COLBOX_LEFT;
+            xtilecoord_left_collision_player = player_left_collision_coord >> 4;
+            array_index_bottomleft_colbox = xtilecoord_left_collision_player + (ytilecoord_bottom_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+            tile_collision_type_bottomleft = ROOM_A_COLLISIONS[array_index_bottomleft_colbox];
+
+            player_right_collision_coord = fix32ToInt(player.position.x) + PLAYER_COLBOX_RIGHT;
+            xtilecoord_right_collision_player = player_right_collision_coord >> 4;
+            array_index_bottomright_colbox = xtilecoord_right_collision_player + (ytilecoord_bottom_collision_player * LENGHT_OF_LEVELCOL_ARRAY);
+            tile_collision_type_bottomright = ROOM_A_COLLISIONS[array_index_bottomright_colbox];
+
+            if (tile_collision_type_bottomleft == SOLID_TILE || tile_collision_type_bottomright == SOLID_TILE)
+            {
+                blocked_coord = (ytilecoord_bottom_collision_player << 4) - PLAYER_COLBOX_BOTTOM;
+                player.position.y = intToFix32(blocked_coord);
+                player.position.y -= FIX32(0.1); 
             }
             break;
         }
@@ -452,11 +424,12 @@ void checkCollisions()
             break;
     }
 
+
     if (tile_collision_type_topleft == CHANGEROOM_TILE || 
         tile_collision_type_topright == CHANGEROOM_TILE || 
         tile_collision_type_bottomleft == CHANGEROOM_TILE || 
         tile_collision_type_bottomright == CHANGEROOM_TILE)
     {
         loadRoomByIndex(1);
-    }
+    } */
 }
