@@ -8,6 +8,7 @@
     "genesis.h": "c",
     "resources.h": "c",
     "player.h": "c",
-    "inputs.h": "c"
+    "inputs.h": "c",
+    "camera.h": "c"
 }
 }
