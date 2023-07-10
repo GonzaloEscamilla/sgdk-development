@@ -1,9 +1,7 @@
-#ifndef _COLLISIONS_H_
-#define _COLLISIONS_H_
+#pragma once
 
 #include <genesis.h>
 #include <resources.h>
-
 
 typedef struct BoxCollider_
 {
@@ -27,5 +25,3 @@ BoxCollider COL_newBoxCollider(s16 xMin, s16 xMax, s16 yMin, s16 yMax);
 BoxCollider getTileBounds(s16 x, s16 y);
 
 Vect2D_u16 posToTile(Vect2D_s16 position);
-
-#endif

@@ -19,6 +19,7 @@ const BoxCollider characterBox = {
  
 Player player;
 
+
 void PLAYER_Init()
 {
     player.velocity.x = FIX32(0.0f);
@@ -68,7 +69,6 @@ void PLAYER_Update()
             break;
     }
 
-
     PLAYER_checkCollisions();
 } 
 
@@ -83,21 +83,174 @@ void PLAYER_checkCollisions()
 			fix32ToInt(player.position.y) + characterBox.max.y
 		);
 
+    s16 leftCollisionXCoord = characterBounds.min.x >> 4;
+    s16 rightCollisionXCoord = characterBounds.max.x >> 4;
+    s16 topCollisionYCoord = characterBounds.min.y >> 4;
+    s16 bottomCollisionYCoord = characterBounds.max.y >> 4;
+
+    // Note: Doing a bit shift while be better. Or a matrix, for the bit shif you need a 8 multiple collider level array
+    s16 topLeftCollisionTileCoord = leftCollisionXCoord + (topCollisionYCoord * LENGHT_OF_LEVELCOL_ARRAY); 
+    s16 topRightCollisionTileCoord = rightCollisionXCoord + (topCollisionYCoord * LENGHT_OF_LEVELCOL_ARRAY); 
+    s16 bottomLeftCollisionTileCoord = leftCollisionXCoord + (bottomCollisionYCoord * LENGHT_OF_LEVELCOL_ARRAY); 
+    s16 bottomRightCollisionTileCoord = rightCollisionXCoord + (bottomCollisionYCoord * LENGHT_OF_LEVELCOL_ARRAY); 
+
+    u8 topLeftTileType = ROOM_B_COLLISIONS[topLeftCollisionTileCoord];
+    u8 topRightTileType = ROOM_B_COLLISIONS[topRightCollisionTileCoord];
+    u8 bottomLeftTileType = ROOM_B_COLLISIONS[bottomLeftCollisionTileCoord];
+    u8 bottomRightTileType = ROOM_B_COLLISIONS[bottomRightCollisionTileCoord];
     
-    s16 topLeftCollisionTile = characterBounds.min.x >> 4;
-    s16 topRightCollisionTile = characterBounds.max.x >> 4;
-    s16 bottomLeftCollisionTile = characterBounds.min.y >> 4;
-    s16 bottomRightCollisionTile = characterBounds.max.y >> 4;
+    switch (player.currentDirection)
+    {
+        case Left:
+            if (topLeftTileType == SOLID_TILE || bottomLeftTileType == SOLID_TILE)
+            {
+                player.position.x =  intToFix32((leftCollisionXCoord << 4) + LEVEL_TILE_SIZE - PLAYER_COLBOX_LEFT);
+            }
+            
+            break;
+        case Right:
+            if (topRightTileType == SOLID_TILE || bottomRightTileType == SOLID_TILE)
+            {
+                player.position.x =  intToFix32((rightCollisionXCoord << 4) - PLAYER_COLBOX_RIGHT);
+                player.position.x -= PLAYER_DEPENETRATION;
+            }
+            break;
+        case Back:
+            if (topLeftTileType == SOLID_TILE || topRightTileType == SOLID_TILE)
+            {
+                player.position.y =  intToFix32((topCollisionYCoord << 4) + LEVEL_TILE_SIZE - PLAYER_COLBOX_TOP);
+            }
+            break;
+        case Front:
+            if (bottomLeftTileType == SOLID_TILE || bottomRightTileType == SOLID_TILE)
+            {
+                player.position.y =  intToFix32((bottomCollisionYCoord << 4) - PLAYER_COLBOX_BOTTOM);
+                player.position.y -= PLAYER_DEPENETRATION;
+            }
+            break;
+        case BackLeft:
+            if (bottomLeftTileType == SOLID_TILE || topRightTileType == SOLID_TILE)
+            {
+                if (bottomLeftTileType == SOLID_TILE)
+                {
+                    player.position.x =  intToFix32((leftCollisionXCoord << 4) + LEVEL_TILE_SIZE - PLAYER_COLBOX_LEFT);
+                }
+                if (topRightTileType == SOLID_TILE)
+                {
+                    player.position.y =  intToFix32((topCollisionYCoord << 4) + LEVEL_TILE_SIZE - PLAYER_COLBOX_TOP);
+                }
+            }
+            else if (topLeftTileType == SOLID_TILE)
+            {
+                kprintf("Char Bound ""%i", characterBounds.min.x); 
+                kprintf("Tile X Value""%i", (leftCollisionXCoord << 4) + PLAYER_COLBOX_LEFT+2); 
 
-    u16 topLeftCollisionTileIndex = topLeftCollisionTile + LENGHT_OF_LEVELCOL_ARRAY;
-    u8 topLeftTileType = ROOM_A_COLLISIONS[topLeftCollisionTileIndex];
+                if (characterBounds.min.x <= ((leftCollisionXCoord << 4) + PLAYER_COLBOX_LEFT +2))
+                {
+                    kprintf("Is LLeft");
+                    player.position.y =  intToFix32((topCollisionYCoord << 4) + LEVEL_TILE_SIZE - PLAYER_COLBOX_TOP);
+                }
+                else if (characterBounds.min.x > ((leftCollisionXCoord << 4) + PLAYER_COLBOX_LEFT+2 ))
+                {
+                    kprintf("Is RRight");
+                    player.position.x =  intToFix32((leftCollisionXCoord << 4) + LEVEL_TILE_SIZE - PLAYER_COLBOX_LEFT);
+                }
+            }   
+            break;
+        case BackRight:
+            if (topLeftTileType == SOLID_TILE || bottomRightTileType == SOLID_TILE)
+            {
+                if (bottomRightTileType == SOLID_TILE)
+                {
+                    player.position.x =  intToFix32((rightCollisionXCoord << 4) - PLAYER_COLBOX_RIGHT);
+                    player.position.x -= PLAYER_DEPENETRATION;
+                }
+                if (topLeftTileType == SOLID_TILE)
+                {
+                    player.position.y = intToFix32((topCollisionYCoord << 4) + LEVEL_TILE_SIZE - PLAYER_COLBOX_TOP);
+                }
+            }
+            else if (topRightTileType == SOLID_TILE)
+            {
+                if (characterBounds.max.x <= ((rightCollisionXCoord << 4)))
+                {
+                    player.position.x =  intToFix32((rightCollisionXCoord << 4) - PLAYER_COLBOX_RIGHT);
+                    player.position.x -= PLAYER_DEPENETRATION;
 
-/*     kprintf("%i", characterBounds.min.x >> 4);
-    kprintf("%i", characterBounds.min.y >> 4);
-    kprintf("%i", characterBounds.max.x >> 4);
-    kprintf("%i", characterBounds.max.y >> 4);  */
+                }
+                else if (characterBounds.max.x > ((rightCollisionXCoord << 4)))
+                {
+                    player.position.y = intToFix32((topCollisionYCoord << 4) + LEVEL_TILE_SIZE - PLAYER_COLBOX_TOP);
+                }
+            }  
+            break;
+        case FrontLeft:
+            if (topLeftTileType == SOLID_TILE || bottomRightTileType == SOLID_TILE)
+            {
+                if (topLeftTileType == SOLID_TILE)
+                {
+                    player.position.x = intToFix32((leftCollisionXCoord << 4) + LEVEL_TILE_SIZE - PLAYER_COLBOX_LEFT);
+                    player.position.x += PLAYER_DEPENETRATION;
+                }
+                if (bottomRightTileType == SOLID_TILE)
+                {
+                    player.position.y =  intToFix32((bottomCollisionYCoord << 4) - PLAYER_COLBOX_BOTTOM);
+                    player.position.y -= PLAYER_DEPENETRATION;
+                }
+            }
+            else if (bottomLeftTileType == SOLID_TILE)
+            {
+                if (characterBounds.min.x <= ((leftCollisionXCoord << 4) + PLAYER_COLBOX_LEFT +2))
+                {
+                    player.position.y =  intToFix32((bottomCollisionYCoord << 4) - PLAYER_COLBOX_BOTTOM);
+                    player.position.y -= PLAYER_DEPENETRATION;
+                }
+                else if (characterBounds.min.x > ((leftCollisionXCoord << 4) + PLAYER_COLBOX_LEFT+2 ))
+                {
+                    player.position.x = intToFix32((leftCollisionXCoord << 4) + LEVEL_TILE_SIZE - PLAYER_COLBOX_LEFT);
+                    player.position.x += PLAYER_DEPENETRATION;
+                }
+            }
+            break;
+        case FrontRight:
+            if (topRightTileType == SOLID_TILE || bottomLeftTileType == SOLID_TILE)
+                {
+                    if (topRightTileType == SOLID_TILE)
+                    {
+                        player.position.x =  intToFix32((rightCollisionXCoord << 4) - PLAYER_COLBOX_RIGHT);
+                        player.position.x -= PLAYER_DEPENETRATION;
+                    }
+                    if (bottomLeftTileType == SOLID_TILE)
+                    {
+                        player.position.y =  intToFix32((bottomCollisionYCoord << 4) - PLAYER_COLBOX_BOTTOM);
+                        player.position.y -= PLAYER_DEPENETRATION;
+                    }
+                }
+                else if (bottomRightTileType == SOLID_TILE)
+                {
+                    if (characterBounds.max.x <= ((rightCollisionXCoord << 4)))
+                    {
+                        player.position.x =  intToFix32((rightCollisionXCoord << 4) - PLAYER_COLBOX_RIGHT);
+                        player.position.x -= PLAYER_DEPENETRATION;
 
-    kprintf("%i", topLeftTileType); 
+                    }
+                    else if (characterBounds.max.x > ((rightCollisionXCoord << 4)))
+                    {
+                        player.position.y =  intToFix32((bottomCollisionYCoord << 4) - PLAYER_COLBOX_BOTTOM);
+                        player.position.y -= PLAYER_DEPENETRATION;
+                    }
+                }
+                break;
+        default:
+            break;
+    }
+
+    /*     
+    kprintf("Top Left: ""%i", topLeftTileType); 
+    kprintf("Top Right: ""%i", topRightTileType); 
+    kprintf("Bottom Left: ""%i", bottomLeftTileType); 
+    kprintf("Bottom Right: ""%i", bottomRightTileType);
+    */
 
     VDP_drawTextBG(BG_A, buffer, 28, 10);
 }

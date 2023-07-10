@@ -44,7 +44,7 @@ static void joyEvent(u16 joy, u16 changed, u16 state)
 
 int main(bool hardReset)
 {
-    loadRoomByIndex(0);
+    loadRoomByIndex(1);
 
     SPR_init();
     
@@ -95,7 +95,6 @@ void loadRoom(MapDefinition* mapToLoad)
     player.position.x = FIX32(140);
     player.position.y = FIX32(160);
     
-
     VDP_loadTileSet(&dungeon_tileset, ind, DMA);
     
     current_level = MAP_create(mapToLoad, BG_A, ind);

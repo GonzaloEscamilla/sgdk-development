@@ -1,5 +1,4 @@
-#ifndef _PLAYER_H_
-#define _PLAYER_H_
+#pragma once
 
 #include <genesis.h>
 #include <resources.h>
@@ -8,10 +7,12 @@
 
 #define PLAYER_WIDTH 32
 #define PLAYER_HEIGHT 32
-#define PLAYER_COLBOX_LEFT 10
+
+#define PLAYER_DEPENETRATION FIX32(0.1)
+#define PLAYER_COLBOX_LEFT 9
 #define PLAYER_COLBOX_RIGHT 23
 #define PLAYER_COLBOX_TOP 18
-#define PLAYER_COLBOX_BOTTOM 31
+#define PLAYER_COLBOX_BOTTOM 30
 
 extern const BoxCollider characterBox;
 
@@ -44,5 +45,3 @@ void PLAYER_Init();
 void PLAYER_Update();
 void PLAYER_InputChanged();
 void PLAYER_checkCollisions();
-
-#endif
