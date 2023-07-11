@@ -14,8 +14,6 @@ int main(bool hardReset)
 
     SPR_init();
     
-    PAL_setPalette(PAL0, dungeon_pal0.data, DMA);
-    
     SYS_doVBlankProcess();
 
     INPUT_Init();

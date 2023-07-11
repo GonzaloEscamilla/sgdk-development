@@ -25,6 +25,8 @@ const Level levelTwo =
 
 void LEVEL_Init()
 {
+    PAL_setPalette(PAL0, dungeon_pal0.data, DMA); //TBD
+
 	currentLevel = &levelTwo;
 
 	LEVEL_Load(currentLevel);
