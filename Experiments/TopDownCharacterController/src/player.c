@@ -94,10 +94,16 @@ void PLAYER_checkCollisions()
     s16 bottomLeftCollisionTileCoord = leftCollisionXCoord + (bottomCollisionYCoord * LENGHT_OF_LEVELCOL_ARRAY); 
     s16 bottomRightCollisionTileCoord = rightCollisionXCoord + (bottomCollisionYCoord * LENGHT_OF_LEVELCOL_ARRAY); 
 
-    u8 topLeftTileType = ROOM_B_COLLISIONS[topLeftCollisionTileCoord];
+/*     u8 topLeftTileType =  ROOM_B_COLLISIONS[topLeftCollisionTileCoord];
     u8 topRightTileType = ROOM_B_COLLISIONS[topRightCollisionTileCoord];
     u8 bottomLeftTileType = ROOM_B_COLLISIONS[bottomLeftCollisionTileCoord];
-    u8 bottomRightTileType = ROOM_B_COLLISIONS[bottomRightCollisionTileCoord];
+    u8 bottomRightTileType = ROOM_B_COLLISIONS[bottomRightCollisionTileCoord]; */
+
+    
+    u8 topLeftTileType =  currentLevel->collisionMap[topLeftCollisionTileCoord];
+    u8 topRightTileType = currentLevel->collisionMap[topRightCollisionTileCoord];
+    u8 bottomLeftTileType = currentLevel->collisionMap[bottomLeftCollisionTileCoord];
+    u8 bottomRightTileType = currentLevel->collisionMap[bottomRightCollisionTileCoord];
     
     switch (player.currentDirection)
     {
