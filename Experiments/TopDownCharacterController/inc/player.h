@@ -4,9 +4,12 @@
 #include <resources.h>
 #include "../inc/collisions.h"
 #include "../inc/level.h"
+#include "../inc/coinsController.h"
 
 #define PLAYER_WIDTH 32
 #define PLAYER_HEIGHT 32
+#define PLAYER_HALF_WIDTH 16
+#define PLAYER_HALF_HEIGHT 16
 
 #define PLAYER_DEPENETRATION FIX32(0.1)
 #define PLAYER_COLBOX_LEFT 9

@@ -25,11 +25,16 @@ const Level levelTwo =
 
 void LEVEL_Init()
 {
+    SPR_init();
+
+	COINS_Init();
+
     PAL_setPalette(PAL0, dungeon_pal0.data, DMA); //TBD
 
 	currentLevel = &levelTwo;
 
 	LEVEL_Load(currentLevel);
+	COINS_Spawn(FIX16(48), FIX16(48));
 }
 
 void LEVEL_Load(Level* level)
@@ -53,10 +58,11 @@ void LEVEL_Load(Level* level)
     SPR_update();
     SYS_doVBlankProcess();
 
-    u16 palette[32];
+    u16 palette[48];
     memcpy(&palette[0], dungeon_pal0.data, 16);
     memcpy(&palette[16], spr_player.palette->data, 16);
-    PAL_fadeIn(0, 32, palette, 30, FALSE);
+    memcpy(&palette[32], spr_coin.palette->data, 16);
+    PAL_fadeIn(0, 48, palette, 30, FALSE);
 }
 
 const u16 LENGHT_OF_LEVELCOL_ARRAY = 20;

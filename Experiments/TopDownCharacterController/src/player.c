@@ -11,14 +11,20 @@
 #define ANIM_WALK_RIGHT 6
 #define ANIM_WALK_LEFT 7
 
+#define CHECK_INTERACTABLES_RATE 6
+#define DISTANCE_TO_COLLECTABLE_THERESHOLD 16
 
 const BoxCollider characterBox = {
     .min = { PLAYER_COLBOX_LEFT, PLAYER_COLBOX_TOP },
     .max = { PLAYER_COLBOX_RIGHT, PLAYER_COLBOX_BOTTOM }
 };
- 
-Player player;
 
+void collectCoin();
+void checkInteractables();
+Vect2D_s32 getPlayerCenter();
+
+Player player;
+u8 checkCounter = 0;
 
 void PLAYER_Init()
 {
@@ -148,17 +154,12 @@ void PLAYER_checkCollisions()
             }
             else if (topLeftTileType == SOLID_TILE)
             {
-                kprintf("Char Bound ""%i", characterBounds.min.x); 
-                kprintf("Tile X Value""%i", (leftCollisionXCoord << 4) + PLAYER_COLBOX_LEFT+2); 
-
                 if (characterBounds.min.x <= ((leftCollisionXCoord << 4) + PLAYER_COLBOX_LEFT +2))
                 {
-                    kprintf("Is LLeft");
                     player.position.y =  intToFix32((topCollisionYCoord << 4) + LEVEL_TILE_SIZE - PLAYER_COLBOX_TOP);
                 }
                 else if (characterBounds.min.x > ((leftCollisionXCoord << 4) + PLAYER_COLBOX_LEFT+2 ))
                 {
-                    kprintf("Is RRight");
                     player.position.x =  intToFix32((leftCollisionXCoord << 4) + LEVEL_TILE_SIZE - PLAYER_COLBOX_LEFT);
                 }
             }   
@@ -250,6 +251,8 @@ void PLAYER_checkCollisions()
         default:
             break;
     }
+    
+   checkInteractables();
 
     /*     
     kprintf("Top Left: ""%i", topLeftTileType); 
@@ -309,4 +312,41 @@ else if ((changed & BUTTON_RIGHT) || (changed & BUTTON_LEFT) || (changed & BUTTO
         //SPR_setAnimAndFrame(player, ANIM_IDLE_FRONT, 0);
         //player->timer = 0;
     } */
+}
+
+void checkInteractables()
+{
+    if ((checkCounter++ % CHECK_INTERACTABLES_RATE) != 0)
+        return;
+    
+    kprintf("Check""%i", checkCounter); 
+
+    Coin** coins = POOL_getFirst(coinsPool);
+    u16 numCoins = POOL_getNumAllocated(coinsPool);
+    u16 distanceX = 0;
+    u16 distanceY = 0;
+    
+    Vect2D_s32 playerCenter = getPlayerCenter();
+
+    kprintf("Num Coins ""%i", numCoins); 
+    while (numCoins--)
+    {
+        Coin* coin = *coins++;
+        distanceX = abs(fix16ToInt(coin->position.x) - playerCenter.x);
+        distanceY = abs(fix16ToInt(coin->position.y) - playerCenter.y);
+        if (distanceX <= DISTANCE_TO_COLLECTABLE_THERESHOLD && distanceY <= DISTANCE_TO_COLLECTABLE_THERESHOLD)
+        {
+            COINS_Collect(coin);
+        }
+    }
+}
+
+void collectCoin()
+{
+
+}
+
+Vect2D_s32 getPlayerCenter()
+{
+    return newVector2D_s32(fix32ToInt(player.position.x) + PLAYER_HALF_WIDTH, fix32ToInt(player.position.y) + PLAYER_HALF_HEIGHT);
 }

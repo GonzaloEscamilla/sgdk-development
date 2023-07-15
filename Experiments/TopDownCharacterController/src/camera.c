@@ -1,14 +1,14 @@
 #include "../inc/camera.h"
 #include "../inc/player.h"
 
-static Map* currentLevel;
+static Map* cameraCurrentLevel;
 
 int current_camera_x = 100;
 int current_camera_y = 100;
 
 void CAMERA_Init(Map* level)
 {
-    currentLevel = level;
+    cameraCurrentLevel = level;
 }
 
 void CAMERA_update()
@@ -89,7 +89,7 @@ void CAMERA_update()
     {
         current_camera_x = new_camera_x;
         current_camera_y = new_camera_y;
-        MAP_scrollTo(currentLevel, current_camera_x, current_camera_y);
+        MAP_scrollTo(cameraCurrentLevel, current_camera_x, current_camera_y);
     }
 
     //kprintf("PlayerPosition: x = %ld, y = %ld\n", playerPosition.x, playerPosition.y);

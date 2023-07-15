@@ -3,6 +3,7 @@
 #include <genesis.h>
 #include <resources.h>
 #include "../inc/player.h"
+#include "../inc/coinsController.h"
 
 #define LEVEL_TILE_SIZE 16
 #define WALKABLE_TILE 0
