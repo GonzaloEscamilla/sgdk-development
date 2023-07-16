@@ -16,17 +16,18 @@ void COINS_Init()
     return coinsPool;
 }
 
-void COINS_Spawn(u16 x, u16 y)
+void COINS_Spawn(s16 x, s16 y)
 {
-    Coin* coin = (Coin*)OBJ_create(coinsPool);
-
+    //Coin* coin = (Coin*)OBJ_create(coinsPool);
+    Coin* coin = (Coin*)POOL_allocate(coinsPool);
+    
     // Set the methods for the entity object
     OBJ_setInitMethod((Object*)coin, InitCallback);
     OBJ_setUpdateMethod((Object*)coin, UpdateCallback);
     OBJ_setEndMethod((Object*)coin, EndCallback);
     
-    coin->position.x = x;
-    coin->position.y = y;
+    coin->position.x = intToFix16(x);
+    coin->position.y = intToFix16(y);
     coin->init(coin);
 }
 
@@ -39,7 +40,8 @@ void COINS_Update()
 void COINS_Collect(Coin* coin)
 {
     coin->end(coin);
-    OBJ_release(coinsPool, coin, TRUE);
+    POOL_release(coinsPool, coin, TRUE);
+    //OBJ_release(coinsPool, coin, TRUE);
 }
 
 void InitCallback(Object* obj)

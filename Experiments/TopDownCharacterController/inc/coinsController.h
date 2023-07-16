@@ -14,4 +14,5 @@ extern Pool* coinsPool;
 
 void COINS_Init();
 void COINS_Update();
-void COINS_Spawn(u16 x, u16 y);
+void COINS_Spawn(s16 x, s16 y);
+void COINS_Collect(Coin* coin);

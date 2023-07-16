@@ -34,7 +34,12 @@ void LEVEL_Init()
 	currentLevel = &levelTwo;
 
 	LEVEL_Load(currentLevel);
-	COINS_Spawn(FIX16(48), FIX16(48));
+
+	//Note: Spawn Initial Coins
+	COINS_Spawn(50, 50);
+	COINS_Spawn(260, 50);
+	COINS_Spawn(50, 180);
+	COINS_Spawn(260, 180);
 }
 
 void LEVEL_Load(Level* level)
@@ -100,5 +105,5 @@ const u8 ROOM_B_COLLISIONS[280] =
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 	1, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 1,
 	1, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1 
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1 
 };

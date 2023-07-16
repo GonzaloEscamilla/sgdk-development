@@ -276,42 +276,42 @@ void PLAYER_InputChanged()
     if (joy != JOY_1)
         return;
     
-if (state & BUTTON_RIGHT)
-{
-    if (state & BUTTON_UP)
-        player.currentDirection = BackRight;
-    else if (state & BUTTON_DOWN)
-        player.currentDirection = FrontRight;
-    else
-        player.currentDirection = Right;
-}
-else if (state & BUTTON_LEFT)
-{
-    if (state & BUTTON_UP)
-        player.currentDirection = BackLeft;
-    else if (state & BUTTON_DOWN)
-        player.currentDirection = FrontLeft;
-    else
-        player.currentDirection = Left;
-}
-else if (state & BUTTON_UP)
-{
-    player.currentDirection = Back;
-}
-else if (state & BUTTON_DOWN)
-{
-    player.currentDirection = Front;
-}
-else if ((changed & BUTTON_RIGHT) || (changed & BUTTON_LEFT) || (changed & BUTTON_UP) || (changed & BUTTON_DOWN))
-{
-    player.currentDirection = None;
-}
-
-    /*if(!(joy1Value & BUTTON_LEFT) && !(joy1Value & BUTTON_RIGHT) && !(joy1Value & BUTTON_DOWN) && !(joy1Value & BUTTON_UP))
+    if (state & BUTTON_RIGHT)
     {
-        //SPR_setAnimAndFrame(player, ANIM_IDLE_FRONT, 0);
-        //player->timer = 0;
-    } */
+        if (state & BUTTON_UP)
+            player.currentDirection = BackRight;
+        else if (state & BUTTON_DOWN)
+            player.currentDirection = FrontRight;
+        else
+            player.currentDirection = Right;
+    }
+    else if (state & BUTTON_LEFT)
+    {
+        if (state & BUTTON_UP)
+            player.currentDirection = BackLeft;
+        else if (state & BUTTON_DOWN)
+            player.currentDirection = FrontLeft;
+        else
+            player.currentDirection = Left;
+    }
+    else if (state & BUTTON_UP)
+    {
+        player.currentDirection = Back;
+    }
+    else if (state & BUTTON_DOWN)
+    {
+        player.currentDirection = Front;
+    }
+    else if ((changed & BUTTON_RIGHT) || (changed & BUTTON_LEFT) || (changed & BUTTON_UP) || (changed & BUTTON_DOWN))
+    {
+        player.currentDirection = None;
+    }
+
+    if (state & BUTTON_A)
+    {
+        COINS_Spawn(32, 32);
+    }
+    
 }
 
 void checkInteractables()
@@ -319,7 +319,7 @@ void checkInteractables()
     if ((checkCounter++ % CHECK_INTERACTABLES_RATE) != 0)
         return;
     
-    kprintf("Check""%i", checkCounter); 
+    //kprintf("Check""%i", checkCounter); 
 
     Coin** coins = POOL_getFirst(coinsPool);
     u16 numCoins = POOL_getNumAllocated(coinsPool);
@@ -328,7 +328,7 @@ void checkInteractables()
     
     Vect2D_s32 playerCenter = getPlayerCenter();
 
-    kprintf("Num Coins ""%i", numCoins); 
+    //kprintf("Num Coins ""%i", numCoins); 
     while (numCoins--)
     {
         Coin* coin = *coins++;
