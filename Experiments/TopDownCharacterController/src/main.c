@@ -6,11 +6,17 @@
 #include "../inc/camera.h"
 #include "../inc/level.h"
 #include "../inc/coinsController.h"
+#include "../inc/tweening.h"
 
 char info[10];
 
 int main(bool hardReset)
 {
+    KLog_U1("Free RAM: ",MEM_getFree());
+
+    TWEEN_Init();
+        KLog_U1("Free RAM: ",MEM_getFree());
+
     LEVEL_Init();
     
     SYS_doVBlankProcess();
@@ -26,6 +32,7 @@ int main(bool hardReset)
         PLAYER_Update();
         CAMERA_update();
         //COINS_Update();a
+        TWEEN_Update();
         SPR_update();
         SYS_doVBlankProcess();
     }

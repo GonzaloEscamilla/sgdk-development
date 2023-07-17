@@ -13,10 +13,9 @@ void Cleanup();
 void COINS_Init()
 {
     coinsPool = OBJ_createObjectPool(16, sizeof(Coin));
-    return coinsPool;
 }
 
-void COINS_Spawn(s16 x, s16 y)
+Coin* COINS_Spawn(s16 x, s16 y)
 {
     //Coin* coin = (Coin*)OBJ_create(coinsPool);
     Coin* coin = (Coin*)POOL_allocate(coinsPool);
@@ -29,6 +28,8 @@ void COINS_Spawn(s16 x, s16 y)
     coin->position.x = intToFix16(x);
     coin->position.y = intToFix16(y);
     coin->init(coin);
+
+    return coin;
 }
 
 void COINS_Update()

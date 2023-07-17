@@ -36,10 +36,16 @@ void LEVEL_Init()
 	LEVEL_Load(currentLevel);
 
 	//Note: Spawn Initial Coins
-	COINS_Spawn(50, 50);
+	Coin* newCoin = COINS_Spawn(50, 50);
 	COINS_Spawn(260, 50);
 	COINS_Spawn(50, 180);
 	COINS_Spawn(260, 180);
+
+	Vect2D_s32 from = newVector2D_s32(50,50);
+	Vect2D_s32 to = newVector2D_s32(250,50);
+
+	Tweener* newTweener = TWEEN_MoveFromTo(newCoin->sprite,from,to, FIX16(0.1) );
+	TWEEN_SetEase(newTweener, EaseInExpo);
 }
 
 void LEVEL_Load(Level* level)
