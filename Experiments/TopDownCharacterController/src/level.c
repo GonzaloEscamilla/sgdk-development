@@ -41,11 +41,13 @@ void LEVEL_Init()
 	COINS_Spawn(50, 180);
 	COINS_Spawn(260, 180);
 
-	Vect2D_s32 from = newVector2D_s32(50,50);
+	Vect2D_s16 from = newVector2D_s16(50,50);
 	Vect2D_s32 to = newVector2D_s32(250,50);
 
-	Tweener* newTweener = TWEEN_MoveFromTo(newCoin->sprite,from,to, FIX16(0.1) );
-	TWEEN_SetEase(newTweener, EaseInExpo);
+	Tweener* newTweener = TWEEN_Move1D(newCoin->sprite, from, EASE_DIRECTION_RIGHT, 120, FIX16(5.34));
+	TWEEN_SetEase(newTweener, EaseLinear);
+	TWEEN_SetCompletedCallback(newTweener, &TWEEN_Kill);
+	//newTweener->Completed = (void*)&TWEEN_Kill; this works also
 }
 
 void LEVEL_Load(Level* level)

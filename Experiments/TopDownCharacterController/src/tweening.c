@@ -24,23 +24,34 @@ void TWEEN_Update()
     OBJ_updateAll(tweenersPool);
 }
 
+void TWEEN_Kill(Tweener* tweener)
+{
+    tweener->end(tweener);
+    POOL_release(tweenersPool, tweener, TRUE);
+}
+
+void TWEEN_SetCompletedCallback(Tweener* tweener, void (*callback)(Tweener*)) 
+{
+    tweener->Completed = (void*)callback;
+}
+
 void TWEEN_SetEase(Tweener* tweener, EaseType easeType)
 {
     tweener->easeType = easeType;
     SetEaseTypeBasedUpdateCallback(tweener);
 }
 
-Tweener* TWEEN_MoveFromTo(Sprite* spriteToMove, Vect2D_s32 from, Vect2D_s32 to, fix16 speed)
+Tweener* TWEEN_Move1D(Sprite* spriteToMove, Vect2D_s16 from, u8 direction, u16 displacementAmount, fix16 speed)
 {
     Tweener* tweener = (Tweener*)POOL_allocate(tweenersPool);
     
     tweener->currentSprite = spriteToMove;
-    tweener->destination.x = to.x;
-    tweener->destination.y = to.y;
-    tweener->currentPosition.x = intToFix16(from.x); 
-    tweener->currentPosition.y = intToFix16(from.y); 
+    tweener->currentPosition.x = intToFix16(from.x);
+    tweener->currentPosition.y = intToFix16(from.y);
+    tweener->direction = direction;
+    tweener->remainingDistance = intToFix16(displacementAmount);
     tweener->speed = speed;
-    tweener->easeType = Linear;
+    tweener->easeType = EaseLinear;
 
     OBJ_setInitMethod((Object*)tweener, TweenInitCallback);
     OBJ_setUpdateMethod((Object*)tweener, TweenLinearUpdate);
@@ -56,11 +67,18 @@ void TweenInitCallback(Object* obj)
     
 }
 
+void TweenEndCallback(Object* obj)
+{
+    Tweener* tweener = (Tweener*)obj;
+    SPR_releaseSprite(tweener->currentSprite);
+    tweener->Completed = NULL;
+}
+
 void SetEaseTypeBasedUpdateCallback(Tweener* tweener)
 {
     switch (tweener->easeType)
     {
-        case Linear:
+        case EaseLinear:
             OBJ_setUpdateMethod((Object*)tweener, TweenLinearUpdate);
             break;
         case EaseInExpo:
@@ -73,11 +91,9 @@ void SetEaseTypeBasedUpdateCallback(Tweener* tweener)
     }
 }
 
-
-
 void TweenInExpoUpdate(Object* obj)
 {
-    Tweener* tweener = (Tweener*)obj;
+    /* Tweener* tweener = (Tweener*)obj;
 
     if (tweener->currentSprite == NULL)
             return;
@@ -120,12 +136,11 @@ void TweenInExpoUpdate(Object* obj)
     {
         tweener->speed -= FIX16(0.25);
     }
-    
 
     tweener->currentPosition.x += xMovement;
     tweener->currentPosition.y += yMovement;
 
-    SPR_setPosition(tweener->currentSprite, fix16ToInt(tweener->currentPosition.x), fix16ToInt(tweener->currentPosition.y));
+    SPR_setPosition(tweener->currentSprite, fix16ToInt(tweener->currentPosition.x), fix16ToInt(tweener->currentPosition.y)); */
 }
 
 void TweenLinearUpdate(Object* obj)
@@ -133,44 +148,48 @@ void TweenLinearUpdate(Object* obj)
     Tweener* tweener = (Tweener*)obj;
 
     if (tweener->currentSprite == NULL)
-            return;
-
-    Vect2D_s16 distance;
-
-    distance.x = tweener->destination.x - tweener->currentPosition.x;
-    distance.y = tweener->destination.y - tweener->currentPosition.y;
-
-    if (distance.x == 0 && distance.y == 0)
         return;
 
-    kprintf("Current X: ""%i", distance.x); 
-    
-    s16 xMovement = 0;
-    if (distance.x > 0)
-        xMovement = tweener->speed;
-    else if(distance.x < 0)
-        xMovement = -tweener->speed;
-    else
-        xMovement = 0; 
-    
-    s16 yMovement = 0;
-    if (distance.y > 0)
-        yMovement = tweener->speed;
-    else if(distance.y < 0)
-        yMovement = -tweener->speed;
-    else
-        yMovement = 0; 
+    if (tweener->remainingDistance <= 0)
+    {
+        //Tweening movement completed!
 
-    tweener->currentPosition.x += xMovement;
-    tweener->currentPosition.y += yMovement;
+        if (tweener->Completed != NULL)
+        {
+            void (*callback)(Tweener*) = (void (*)(Tweener*))tweener->Completed;
+            callback(tweener);
+        }
 
-    SPR_setPosition(tweener->currentSprite, tweener->currentPosition.x, tweener->currentPosition.y);
-}
+        return;
+    }
 
-void TweenEndCallback(Object* obj)
-{
-    Tweener* tweener = (Tweener*)obj;
-    SPR_releaseSprite(tweener->currentSprite);
+    kprintf("Distance ""%i", fix16ToInt(tweener->remainingDistance)); 
+
+    tweener->remainingDistance -= tweener->speed;
+
+    switch (tweener->direction)
+    {
+        // UP
+        case 0:
+            tweener->currentPosition.y -= tweener->speed;
+            break;
+        // DOWN
+        case 1:
+            tweener->currentPosition.y += tweener->speed;
+            break;
+        // LEFT
+        case 2:
+            tweener->currentPosition.x -= tweener->speed;
+            break;
+        // RIGHT
+        case 3:
+            tweener->currentPosition.x += tweener->speed;
+            break;
+        default:
+            break;
+    }
+
+    SPR_setPosition(tweener->currentSprite, fix16ToInt(tweener->currentPosition.x), fix16ToInt(tweener->currentPosition.y));
 }
 
 void TweenCleanup()
@@ -184,30 +203,4 @@ void TweenCleanup()
 
     // Destroy the pool
     POOL_destroy(tweenersPool);
-}
-
-bool IsOnPoint(Tweener* tweener, Vect2D_s16 distance)
-{
-    kprintf("Distance ""%i", distance.x); 
-
-    bool isSpeedPositive = tweener->speed > FIX16(0)? TRUE: FALSE;
-    bool isDistancePositive = distance.x > 0 ? TRUE: FALSE;
-
-    kprintf("ISSpeedPositive: ""%i", isSpeedPositive); 
-    kprintf("IsDistancePositive: ""%i", isDistancePositive); 
-
-
-     if (isSpeedPositive && isDistancePositive)
-    {
-        if (fix16ToInt(tweener->speed) > distance.x)
-        {
-            return TRUE;
-        }
-        else
-        {
-            return FALSE;
-        }
-    } 
-    return FALSE;
-    
 }
