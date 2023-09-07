@@ -62,6 +62,22 @@ Tweener* TWEEN_Move1D(Sprite* spriteToMove, Vect2D_s16 from, u8 direction, u16 d
     return tweener;
 }
 
+Tweener* TWEEN_Move1D(Tweener* tweener, u8 direction, u16 displacementAmount, fix16 speed)
+{
+    /* tweener->currentPosition.x = intToFix16(from.x);
+    tweener->currentPosition.y = intToFix16(from.y); */
+    
+    tweener->direction = direction;
+    tweener->remainingDistance = intToFix16(displacementAmount);
+    tweener->speed = speed;
+    tweener->easeType = EaseLinear;
+
+    tweener->init(tweener);
+
+    return tweener;
+}
+
+
 void TweenInitCallback(Object* obj)
 {
     

@@ -45,3 +45,4 @@ void TWEEN_Kill(Tweener* tweener);
 void TWEEN_SetCompletedCallback(Tweener* tweener, void (*callback)(Tweener*));
 void TWEEN_SetEase(Tweener* tweener, EaseType easeType);
 Tweener* TWEEN_Move1D(Sprite* spriteToMove, Vect2D_s16 from, u8 direction, u16 displacementAmount, fix16 speed);
+Tweener* TWEEN_Move1D(Tweener* existingTweener, u8 direction, u16 displacementAmount, fix16 speed);
